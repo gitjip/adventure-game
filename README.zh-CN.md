@@ -1,4 +1,3 @@
-```markdown
 # 冒险游戏（控制台）
 
 这是一个用于 Windows（MinGW）、CMake 与 Boost 的最小控制台文本冒险示例项目。
@@ -61,6 +60,3 @@ cmake -G "MinGW Makefiles" .. -DBOOST_ROOT="D:/Users/damin/mingw64"
 - 如果你想完全依赖 Boost 自带的 CMake config 模式（并直接使用 `Boost::filesystem` 目标），请确保 Boost 安装包含各组件的 CMake 配置文件。否则本项目提供的兼容/手动检测路径会更可靠。
 
 如果仍有问题，请把 CMake 的 configure 输出（`cmake` 控制台输出）与具体的编译/链接错误粘贴过来，我会继续协助诊断。
-
-# adventure-game（仓库）
-```

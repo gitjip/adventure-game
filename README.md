@@ -62,5 +62,3 @@ cmake -G "MinGW Makefiles" .. -DBOOST_ROOT="D:/Users/damin/mingw64"
 - If you want to rely exclusively on Boost's CMake config mode (modern, `Boost::filesystem` targets), make sure your Boost installation provides per-component CMake config files (e.g. `boost_systemConfig.cmake`). Otherwise prefer the compatibility/manual detection approach used here.
 
 If you still have trouble, paste the CMake configure output (`cmake` output) and the exact linker/compiler errors and I can help diagnose further.
-
-# adventure-game
