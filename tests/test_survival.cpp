@@ -1,6 +1,7 @@
 #include "../include/Systems.h"
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 int main() {
   // Test 1: initial values

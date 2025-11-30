@@ -23,7 +23,11 @@ void SurvivalSystem::tick() {
 }
 int SurvivalSystem::health() const { return health_; }
 int SurvivalSystem::hunger() const { return hunger_; }
-void SurvivalSystem::modifyHealth(int delta) { health_ += delta; }
+void SurvivalSystem::modifyHealth(int delta) {
+  health_ += delta;
+  if (health_ < 0) health_ = 0;
+  if (health_ > 100) health_ = 100;
+}
 
 // CombatSystem
 CombatSystem::CombatSystem() {}
