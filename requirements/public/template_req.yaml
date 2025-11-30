@@ -1,0 +1,17 @@
+id: REQ-XXXX
+title: <简短标题>
+author: <作者>
+created: 2025-11-30
+priority: medium
+story_points: 1
+status: draft
+dependencies: []
+description: |
+  在此处写需求的详细描述。使用自然语言说明功能目的、场景及受影响的模块。
+
+acceptance_criteria:
+  - 描述可验证的验收条件（列表形式），例如：
+    - 当发生 X 时，应输出 Y 并写入文件 Z。
+
+notes: |
+  可选：背景信息、设计约束与实现提示。

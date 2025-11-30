@@ -67,5 +67,6 @@ data/*.tmp
 Makefile
 lib/*.a
 
-# Ignore requirements directory (local-only requirement documents)
-requirements/
+# Ignore private requirements; keep public requirements tracked
+requirements/private/
+!requirements/public/
