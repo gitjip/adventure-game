@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <cctype>
 
 namespace fs = boost::filesystem;
 
@@ -133,8 +134,8 @@ bool Game::load_level(const std::string &path) {
       if (colon != std::string::npos) {
         std::string numstr;
         size_t i = colon + 1;
-        while (i < contents.size() && (isspace((unsigned char)contents[i]) || contents[i] == '\"')) ++i;
-        while (i < contents.size() && (isdigit((unsigned char)contents[i]) || contents[i] == '-')) { numstr += contents[i++]; }
+        while (i < contents.size() && (std::isspace((unsigned char)contents[i]) || contents[i] == '"')) ++i;
+        while (i < contents.size() && (std::isdigit((unsigned char)contents[i]) || contents[i] == '-')) { numstr += contents[i++]; }
         if (!numstr.empty()) {
           try { score_ = std::stoi(numstr); } catch(...) { /* ignore */ }
         }
