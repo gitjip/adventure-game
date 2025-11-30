@@ -1,0 +1,7 @@
+{
+  "name": "sample_forest",
+  "description": "A small forest clearing with a single oak.",
+  "events": [
+    { "type": "greet", "params": { "message": "You enter the clearing." } }
+  ]
+}

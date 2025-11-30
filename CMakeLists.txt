@@ -101,6 +101,16 @@ target_sources(adventure_core PRIVATE
   src/Systems.cpp
 )
 
+# Add scene/event implementations (REQ-0003)
+target_sources(adventure_core PRIVATE
+  src/Event.cpp
+  src/Scene.cpp
+)
+
+target_sources(adventure_core PRIVATE
+  src/SceneLoader.cpp
+)
+
 target_include_directories(adventure_core PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(adventure_game PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -174,5 +184,29 @@ if(ENABLE_TESTS)
   target_link_libraries(unit_test_survival PRIVATE adventure_core)
   add_dependencies(unit_test_survival copy_data)
   add_test(NAME unit_survival COMMAND unit_test_survival)
+  
+  # Scene/Event tests (REQ-0003)
+  add_executable(unit_test_scene_event
+    tests/test_scene_event.cpp
+  )
+  target_include_directories(unit_test_scene_event PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
+    target_include_directories(unit_test_scene_event PRIVATE "${BOOST_ROOT}/include")
+  endif()
+  target_link_libraries(unit_test_scene_event PRIVATE adventure_core)
+  add_dependencies(unit_test_scene_event copy_data)
+  add_test(NAME unit_scene_event COMMAND unit_test_scene_event)
+
+  # SceneLoader tests (REQ-0003 loader)
+  add_executable(unit_test_scene_loader
+    tests/test_scene_loader.cpp
+  )
+  target_include_directories(unit_test_scene_loader PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
+    target_include_directories(unit_test_scene_loader PRIVATE "${BOOST_ROOT}/include")
+  endif()
+  target_link_libraries(unit_test_scene_loader PRIVATE adventure_core)
+  add_dependencies(unit_test_scene_loader copy_data)
+  add_test(NAME unit_scene_loader COMMAND unit_test_scene_loader)
 endif()
 

@@ -1,0 +1,9 @@
+{
+  "name": "template_scene",
+  "events": [
+    {
+      "type": "example",
+      "params": { "message": "Hello, world" }
+    }
+  ]
+}
