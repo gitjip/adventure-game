@@ -1,0 +1,44 @@
+name: CI - Windows MinGW (CMake)
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    name: Build and test (Windows + MSYS2/MinGW)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+
+      - name: Install dependencies (mingw toolchain, boost, cmake)
+        shell: msys2 {0}
+        run: |
+          pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-cmake
+
+      - name: Configure (CMake)
+        shell: msys2 {0}
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G "MinGW Makefiles" .. -DBOOST_ROOT=/mingw64
+
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          cd build
+          mingw32-make -j2
+
+      - name: Run unit tests
+        shell: msys2 {0}
+        run: |
+          cd build
+          if [ -f ./unit_tests.exe ]; then ./unit_tests.exe; else echo "unit_tests.exe not found"; exit 1; fi

@@ -1,5 +1,7 @@
 # Adventure Game (Console)
 
+> 中文译本: `README.zh-CN.md`
+
 Minimal console text-adventure project initialized for Windows (MinGW), CMake and Boost.
 
 Build & run (PowerShell, MinGW-w64):
