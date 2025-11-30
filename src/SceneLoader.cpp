@@ -1,31 +1,43 @@
 #include "../include/SceneLoader.h"
 #include <fstream>
 #include <sstream>
-#include <algorithm>
+// Hand-rolled lightweight JSON-like parser sufficient for our sample files.
+// This avoids external dependencies and keeps parsing simple and forgiving.
+#include <cctype>
 
 SceneLoader::SceneLoader() = default;
 
-void SceneLoader::skip_whitespace(const std::string &s, size_t &pos) {
-  while (pos < s.size() && isspace((unsigned char)s[pos])) ++pos;
+static void skip_ws(const std::string &s, size_t &p) {
+  while (p < s.size() && std::isspace((unsigned char)s[p])) ++p;
 }
 
-std::string SceneLoader::extract_string(const std::string &s, size_t &pos) {
-  skip_whitespace(s, pos);
-  if (pos >= s.size() || s[pos] != '"') return {};
-  ++pos; // skip opening
+// Extract a quoted string starting at the first '"' at or after p.
+static std::string extract_quoted(const std::string &s, size_t &p) {
+  size_t q = s.find('"', p);
+  if (q == std::string::npos) return {};
+  ++q; // position after opening quote
   std::string out;
-  while (pos < s.size()) {
-    char c = s[pos++];
+  while (q < s.size()) {
+    char c = s[q++];
     if (c == '"') break;
-    if (c == '\\' && pos < s.size()) {
-      char esc = s[pos++];
+    if (c == '\\' && q < s.size()) {
+      char esc = s[q++];
       if (esc == 'n') out.push_back('\n');
       else out.push_back(esc);
     } else {
       out.push_back(c);
     }
   }
+  p = q;
   return out;
+}
+
+// Find the ':' after a key (which may start at key_pos) and return position after it.
+static size_t find_colon_after_key(const std::string &s, size_t key_pos) {
+  size_t colon = s.find(':', key_pos);
+  if (colon == std::string::npos) return std::string::npos;
+  ++colon;
+  return colon;
 }
 
 std::unique_ptr<Scene> SceneLoader::load(const std::string &path) {
@@ -34,49 +46,75 @@ std::unique_ptr<Scene> SceneLoader::load(const std::string &path) {
   std::stringstream ss; ss << ifs.rdbuf();
   std::string content = ss.str();
 
-  size_t pos = 0;
-  // find "name"
-  size_t name_pos = content.find("\"name\"");
-  std::string scene_name = "loaded_scene";
-  if (name_pos != std::string::npos) {
-    pos = name_pos + 6;
-    auto n = extract_string(content, pos);
-    if (!n.empty()) scene_name = n;
+  // Default scene name is the filename
+  std::string scene_name = path;
+
+  // Try to read top-level "name"
+  size_t name_key = content.find("\"name\"");
+  if (name_key != std::string::npos) {
+    size_t after = find_colon_after_key(content, name_key);
+    if (after != std::string::npos) {
+      scene_name = extract_quoted(content, after);
+      if (scene_name.empty()) scene_name = path;
+    }
   }
 
   auto scene = std::make_unique<Scene>(scene_name);
 
-  // find events array
-  size_t events_pos = content.find("\"events\"");
-  if (events_pos == std::string::npos) return scene;
-  pos = events_pos;
-  // simple loop: find occurrences of "type" within events
+  // Find events array
+  size_t events_key = content.find("\"events\"");
+  if (events_key == std::string::npos) return scene;
+  size_t arr_open = content.find('[', events_key);
+  if (arr_open == std::string::npos) return scene;
+
+  size_t pos = arr_open + 1;
   while (true) {
-    size_t type_pos = content.find("\"type\"", pos);
-    if (type_pos == std::string::npos) break;
-    pos = type_pos + 6;
-    std::string etype = extract_string(content, pos);
+    // Find the next object start
+    size_t obj_start = content.find('{', pos);
+    if (obj_start == std::string::npos) break;
+    size_t obj_end = content.find('}', obj_start);
+    if (obj_end == std::string::npos) break;
 
-    // look for params.message or params.amount
-    size_t message_pos = content.find("\"message\"", pos);
+    // Parse fields inside this object
+    std::string etype;
     std::string message;
-    if (message_pos != std::string::npos && message_pos < content.find(']', events_pos)) {
-      size_t p = message_pos + 9;
-      message = extract_string(content, p);
-    }
-
-    size_t amount_pos = content.find("\"amount\"", pos);
     int amount = 0;
-    if (amount_pos != std::string::npos && amount_pos < content.find(']', events_pos)) {
-      size_t p = amount_pos + 8;
-      // parse simple integer after colon
-      while (p < content.size() && !isdigit((unsigned char)content[p]) && content[p] != '-') ++p;
-      if (p < content.size()) {
-        amount = std::stoi(content.substr(p));
+
+    // find "type"
+    size_t tkey = content.find("\"type\"", obj_start);
+    if (tkey != std::string::npos && tkey < obj_end) {
+      size_t after = find_colon_after_key(content, tkey);
+      if (after != std::string::npos && after < obj_end) {
+        etype = extract_quoted(content, after);
       }
     }
 
-    // Create event actions that capture this loader instance
+    // find params.message
+    size_t mkey = content.find("\"message\"", obj_start);
+    if (mkey != std::string::npos && mkey < obj_end) {
+      size_t after = find_colon_after_key(content, mkey);
+      if (after != std::string::npos && after < obj_end) {
+        message = extract_quoted(content, after);
+      }
+    }
+
+    // find params.amount (simple integer parsing)
+    size_t akey = content.find("\"amount\"", obj_start);
+    if (akey != std::string::npos && akey < obj_end) {
+      size_t after = find_colon_after_key(content, akey);
+      if (after != std::string::npos && after < obj_end) {
+        // skip to first digit or '-'
+        size_t p = after;
+        while (p < obj_end && !std::isdigit((unsigned char)content[p]) && content[p] != '-') ++p;
+        if (p < obj_end) {
+          try {
+            amount = std::stoi(content.substr(p, obj_end - p));
+          } catch (...) { amount = 0; }
+        }
+      }
+    }
+
+    // Create event action
     if (etype == "greet") {
       scene->addEvent(std::make_unique<Event>(etype, [this, message]() {
         messages_.push_back(message);
@@ -85,14 +123,13 @@ std::unique_ptr<Scene> SceneLoader::load(const std::string &path) {
       scene->addEvent(std::make_unique<Event>(etype, [this, amount]() {
         counter_ += amount;
       }));
-    } else {
-      // default: push type to messages
+    } else if (!etype.empty()) {
       scene->addEvent(std::make_unique<Event>(etype, [this, etype]() {
         messages_.push_back(etype);
       }));
     }
 
-    pos = pos + 1;
+    pos = obj_end + 1;
   }
 
   return scene;
