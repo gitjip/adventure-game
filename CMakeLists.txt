@@ -10,9 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Option to enable the SceneLoader (useful to temporarily disable when toolchain
-# or third-party headers are not available). Default OFF to allow builds to
-# proceed while debugging toolchain issues.
-option(ENABLE_SCENELOADER "Enable SceneLoader and its tests" OFF)
+# or third-party headers are not available). Default ON so loader and its tests
+# are built by default in developer environments where dependencies are available.
+option(ENABLE_SCENELOADER "Enable SceneLoader and its tests" ON)
 
 # Ensure nlohmann/json single-header is available in include/ (download if missing)
 set(NLOHMANN_HEADER_DIR "${CMAKE_SOURCE_DIR}/include/nlohmann")

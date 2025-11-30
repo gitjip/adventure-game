@@ -62,3 +62,24 @@ cmake -G "MinGW Makefiles" .. -DBOOST_ROOT="D:/Users/damin/mingw64"
 - If you want to rely exclusively on Boost's CMake config mode (modern, `Boost::filesystem` targets), make sure your Boost installation provides per-component CMake config files (e.g. `boost_systemConfig.cmake`). Otherwise prefer the compatibility/manual detection approach used here.
 
 If you still have trouble, paste the CMake configure output (`cmake` output) and the exact linker/compiler errors and I can help diagnose further.
+
+## Development / Change Log
+
+- `2025-12-01` — Default: `ENABLE_SCENELOADER` is now ON by default. This enables the `SceneLoader` implementation and its unit tests when you configure the project with CMake.
+
+	- To disable the SceneLoader build (for example on constrained toolchains), pass the option when configuring:
+
+		```powershell
+		cmake -G "MinGW Makefiles" .. -DENABLE_SCENELOADER=OFF
+		```
+
+	- Tests including the SceneLoader test are executed by `ctest` (or `cmake --build build --target test` depending on your workflow). Example:
+
+		```powershell
+		# from project root
+		cmake -S . -B build -G "MinGW Makefiles"
+		cmake --build build --config Debug
+		ctest --test-dir build -V
+		```
+
+	- Rationale: enabling the loader by default helps developers run the scene/event integration tests locally. If you encounter platform-specific toolchain issues (e.g., MinGW temp-file or antivirus interference), disable the loader temporarily as shown above.
