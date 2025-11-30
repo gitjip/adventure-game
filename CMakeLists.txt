@@ -9,6 +9,13 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Avoid using response-files for include flags in environments where the
+# command-driver or shell mishles the '@' response-file token (PowerShell
+# / MinGW combinations have exhibited parsing issues). Disabling response
+# files forces CMake to pass -I flags directly.
+set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
+set(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
+
 # Option to enable the SceneLoader (useful to temporarily disable when toolchain
 # or third-party headers are not available). Default ON so loader and its tests
 # are built by default in developer environments where dependencies are available.
@@ -141,6 +148,12 @@ endif()
 
 target_include_directories(adventure_core PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(adventure_game PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+# If FetchContent or other cmake downloads placed nlohmann headers under the
+# build directory (common when FetchContent populates _deps), add that include
+# dir as a fallback so the single-header (and its internal headers) are
+# discoverable even when copied into the build tree.
+
 
 # Ensure Boost headers are available to the core target (json is header-only in many Boost versions)
 if(DEFINED Boost_INCLUDE_DIRS)

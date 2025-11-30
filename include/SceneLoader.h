@@ -20,8 +20,6 @@ public:
 private:
   std::vector<std::string> messages_;
   int counter_ = 0;
-
-  // Helpers used by the simple parser
-  static std::string extract_string(const std::string &s, size_t &pos);
-  static void skip_whitespace(const std::string &s, size_t &pos);
+  // (Parsing implementation is provided in the .cpp and may use a JSON
+  // library. No helper declarations are required here.)
 };
