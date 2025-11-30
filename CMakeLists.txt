@@ -121,6 +121,14 @@ target_link_libraries(adventure_game PRIVATE adventure_core)
 message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
 
+# Copy runtime data (levels, logs, etc.) into the build folder so tests and
+# running the executable from the build directory can find assets.
+add_custom_target(copy_data ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data
+  COMMENT "Copying data/ -> ${CMAKE_BINARY_DIR}/data"
+)
+
 # Option to build unit tests
 option(ENABLE_TESTS "Build unit tests" ON)
 if(ENABLE_TESTS)
@@ -134,6 +142,8 @@ if(ENABLE_TESTS)
   endif()
   # Link core library into unit tests so Game symbols resolve
   target_link_libraries(unit_tests PRIVATE adventure_core)
+    # Ensure test binary is built after data files are copied to the build dir
+    add_dependencies(unit_tests copy_data)
   add_test(NAME unit_tests COMMAND unit_tests)
 endif()
 
