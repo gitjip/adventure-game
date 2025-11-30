@@ -1,0 +1,72 @@
+id: REQ-0002
+title: 完善游戏逻辑
+author: gitjip
+created: 2025-11-30
+priority: high
+story_points: 1
+status: draft
+dependencies: []
+description: |
+  游戏融合了生存、战斗、探索、搜集、合成、建造、剧情等元素。玩家扮演一名幸存者，在灾难后的中世纪传说世界中努力生存并揭开最终的秘密。游戏应实现以下核心玩法：
+  - 生存机制：玩家需管理生命、饥饿、口渴、体温等生存指标，寻找食物和水源。
+  - 战斗系统：玩家可使用近战武器和远程武器对抗各种敌人。
+  - 探索与搜集：开放世界地图，玩家可探索荒野、废墟、城镇等地点，搜集资源和物资。
+  - 合成与建造：玩家可利用搜集的资源合成工具、武器和建造避难所。
+  - 任务与剧情：无友好NPC和商人，玩家通过完成任务和探索剧情线索逐步揭开游戏世界的秘密。
+ 
+acceptance_criteria:
+  - 生存指标：实现并暴露 Player 状态，包括 `health`（0-100）、`hunger`（0-100）、`thirst`（0-100）、`temperature`（摄氏整数）。当任一指标到达 0 时触发相应状态（例如死亡或严重惩罚）。
+  - 命令解析：实现 `Command` 抽象并支持至少以下命令：`Move`, `Look`, `Attack`, `Use`, `Craft`。命令以文本形式输入（例如 `move north`、`attack goblin`），并能被解析为对应 `Command` 对象执行。
+  - 战斗基础：实现 `CombatSystem` 的基础接口，使得玩家能对目标执行 `attack` 并导致目标的 `health` 下降；战斗采用回合制（玩家 -> 敌人 -> 玩家），每次攻击需触发明确的回合边界事件。
+  - 资源系统：实现资源拾取与背包（简单数组/列表），玩家能拾取地面资源并用于合成。
+  - 合成/建造：实现最小的 `Craft` 指令，支持至少两种合成配方（例如 `stick + stone -> axe`），并能将合成物品放入玩家背包或用于建造简单的 `shelter`（占位行为）。
+  - 数据驱动：关卡、物品与命令模板应存放于 `data/` 下，并以可编辑的 JSON/YAML 文件描述。提供至少一个示例 level 文件和一个命令模板文件。
+  - 单元测试：为以下模块提供单元测试并在 CI 中可运行：`SurvivalSystem`（tick 与指标变化）、`CombatSystem`（攻击与掉血）、`Command` 解析（文本到对象）、`Craft`（合成结果）。测试覆盖度需涵盖关键分支与边缘情况。
+  - 文档：为每个系统提供简短文档（README 或注释），说明数据格式、接口函数与典型使用场景。
+
+deliverables:
+  - `include/Systems.h` 与 `src/Systems.cpp`（已提交基础骨架）。
+  - 数据目录样例：`data/levels/req_0002_example.json`、`data/items/items_catalog.json`、`data/commands/command_templates.json`。
+  - 单元测试：`tests/test_survival.cpp`、`tests/test_combat.cpp`、`tests/test_command_parser.cpp`、`tests/test_crafting.cpp`。
+  - 文档：`docs/systems.md` 或 `requirements/private/REQ-0002-implementation.md`（实现计划）。
+
+non_functional_requirements:
+  - 可扩展性：系统应使用清晰的接口（classes/virtual methods）以便未来扩展 AI 与多人模式。
+  - 性能：基础场景（单玩家、少量实体）下每 tick CPU 使用低于 10ms（目标；可通过后续基准验证）。
+  - 可测试性：核心逻辑不依赖于全局单例，应可通过创建对象实例直接进行单元测试。
+
+data_and_formats:
+  - Command 模式（JSON 示例）:
+    {
+      "id": "move",
+      "pattern": "move <direction>",
+      "params": ["direction"]
+    }
+  - Item 样例（items_catalog.json）:
+    { "id": "stick", "name": "Wooden Stick", "stack": 10 }
+  - Level 样例（req_0002_example.json）应包含 `entities`, `resources`, `start_state`（包括 `start_score`、player 起始位置 等）。
+
+testing_requirements:
+  - 为 SurvivalSystem 编写至少 4 个单元测试用例：初始值、tick 导致饥饿变化、饥饿到达阈值影响 health、modifyHealth 正常工作。
+  - 为 CombatSystem 编写至少 3 个单元测试：普通攻击、目标死亡、伤害阻塞（护甲/防御占位）。
+  - 为 Command Parser 编写解析用例（包括错误文本的健壮处理）。
+  - 把测试与 CI 集成（已添加 Windows CI，可在后续根据需要添加 Linux/macOS 矩阵）。
+
+milestones:
+  - M1（本次迭代，1-2 周）: 提交系统骨架、数据示例与基本单元测试，确保能在本地构建并通过最低限度测试。
+  - M2（后续）: 完整合成/建造机制、简单回合制战斗、AI 敌人、更多单元测试与文档。
+
+notes: |
+  - 玩家初始无任何装备，需通过探索和搜集获取资源。
+  - 游戏应包含昼夜交替和动态天气系统，影响玩家的生存状态。
+  - 设计多样化的敌人类型和AI行为，增加战斗挑战性。
+  - 战斗采用回合制机制，玩家和敌人轮流行动。
+  - 提供多种武器和装备，玩家可根据战斗需求进行选择
+  - 提供多种合成配方和建造选项，鼓励玩家创造性地利用资源。
+  - 游戏应支持单人模式，未来可扩展为多人联机。
+  - 玩家输入的命令应抽象为类，如 `Command` 基类及其派生类 `MoveCommand`、`AttackCommand` 等，且作为 level 可编辑文件的基本元素，并提供模板文件。
+  - 游戏应包含至少5个主要任务和若干支线任务，推动剧情发展。
+  - 存在单元测试覆盖核心功能模块，如生存指标管理、战斗逻辑、资源合成等。
+  - 玩家在游戏中输入命令时，程序应正确解析并执行相应操作，确保游戏逻辑的完整性和一致性。
+  - 除了基本元素自身逻辑外，所有元素都可在数据目录下的文件中组合且可编辑。
+  - 游戏应包含详细的文档，说明各个玩法机制和系统的设计思路。
