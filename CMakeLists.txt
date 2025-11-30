@@ -96,6 +96,11 @@ add_library(adventure_core STATIC
   src/Game.cpp
 )
 
+# Add system implementations (REQ-0002 scaffolding)
+target_sources(adventure_core PRIVATE
+  src/Systems.cpp
+)
+
 target_include_directories(adventure_core PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(adventure_game PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
