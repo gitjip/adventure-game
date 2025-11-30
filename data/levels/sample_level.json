@@ -1,0 +1,9 @@
+{
+  "title": "Sample Meadow",
+  "description": "A small grassy meadow with a single oak tree.",
+  "start_score": 0,
+  "entities": [
+    { "type": "tree", "x": 10, "y": 5 },
+    { "type": "rock", "x": 3, "y": 7 }
+  ]
+}

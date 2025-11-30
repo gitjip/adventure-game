@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <cctype>
 
 namespace fs = boost::filesystem;
 
@@ -64,6 +65,15 @@ bool Game::handle_command(const std::string &cmd) {
     }
     return true;
   }
+  if (cmd.rfind("loadlevel ", 0) == 0) {
+    std::string path = cmd.substr(std::string("loadlevel ").length());
+    if (load_level(path)) {
+      std::cout << "Level loaded from " << path << "\n";
+    } else {
+      std::cout << "Failed to load level: " << path << "\n";
+    }
+    return true;
+  }
 
   std::cout << "Unknown command: '" << cmd << "' (type help)\n";
   return true;
@@ -105,6 +115,35 @@ bool Game::load_game(const std::string &path) {
     return true;
   } catch (const fs::filesystem_error &e) {
     std::cerr << "Load failed: " << e.what() << '\n';
+    return false;
+  }
+}
+
+// Very small, dependency-free level loader for simple JSON-like files.
+bool Game::load_level(const std::string &path) {
+  try {
+    fs::path p(path);
+    if (!fs::exists(p)) return false;
+    std::ifstream ifs(p.string());
+    if (!ifs) return false;
+    std::string contents((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    // naive parse: look for "start_score": <number>
+    auto pos = contents.find("\"start_score\"");
+    if (pos != std::string::npos) {
+      auto colon = contents.find(':', pos);
+      if (colon != std::string::npos) {
+        std::string numstr;
+        size_t i = colon + 1;
+        while (i < contents.size() && (std::isspace((unsigned char)contents[i]) || contents[i] == '"')) ++i;
+        while (i < contents.size() && (std::isdigit((unsigned char)contents[i]) || contents[i] == '-')) { numstr += contents[i++]; }
+        if (!numstr.empty()) {
+          try { score_ = std::stoi(numstr); } catch(...) { /* ignore */ }
+        }
+      }
+    }
+    return true;
+  } catch (const fs::filesystem_error &e) {
+    std::cerr << "Load level failed: " << e.what() << '\n';
     return false;
   }
 }

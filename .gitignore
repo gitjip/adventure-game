@@ -50,6 +50,15 @@ CMakeCache.txt
 # Save games and runtime files
 /saves/
 
+# Application logs
+logs/
+devlogs/
+
+# Data caches and editor exports
+data/*.cache
+data/*.tmp
+
+
 # Visual Studio / IDE
 .vscode/
 .idea/
@@ -57,3 +66,7 @@ CMakeCache.txt
 # MinGW makefile artifacts
 Makefile
 lib/*.a
+
+# Ignore private requirements; keep public requirements tracked
+requirements/private/
+!requirements/public/
