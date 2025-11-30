@@ -136,3 +136,22 @@ endif()
 
 message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+
+# Option to build unit tests
+option(ENABLE_TESTS "Build unit tests" ON)
+if(ENABLE_TESTS)
+  enable_testing()
+  add_executable(unit_tests
+    tests/test_game.cpp
+  )
+  target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
+    target_include_directories(unit_tests PRIVATE "${BOOST_ROOT}/include")
+  endif()
+  if(TARGET Boost::filesystem AND TARGET Boost::system)
+    target_link_libraries(unit_tests PRIVATE Boost::filesystem Boost::system)
+  else()
+    target_link_libraries(unit_tests PRIVATE ${Boost_LIBRARIES})
+  endif()
+  add_test(NAME unit_tests COMMAND unit_tests)
+endif()
