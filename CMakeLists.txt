@@ -135,6 +135,7 @@ if(ENABLE_TESTS)
   enable_testing()
   add_executable(unit_tests
     tests/test_game.cpp
+    tests/test_req_0001.cpp
   )
   target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
   if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
