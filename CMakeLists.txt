@@ -135,7 +135,6 @@ if(ENABLE_TESTS)
   enable_testing()
   add_executable(unit_tests
     tests/test_game.cpp
-    tests/test_req_0001.cpp
   )
   target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
   if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
@@ -143,8 +142,20 @@ if(ENABLE_TESTS)
   endif()
   # Link core library into unit tests so Game symbols resolve
   target_link_libraries(unit_tests PRIVATE adventure_core)
-    # Ensure test binary is built after data files are copied to the build dir
-    add_dependencies(unit_tests copy_data)
+  # Ensure test binary is built after data files are copied to the build dir
+  add_dependencies(unit_tests copy_data)
   add_test(NAME unit_tests COMMAND unit_tests)
+
+  # Separate test target for requirement REQ-0001 to avoid multiple 'main' definitions
+  add_executable(unit_test_req_0001
+    tests/test_req_0001.cpp
+  )
+  target_include_directories(unit_test_req_0001 PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
+    target_include_directories(unit_test_req_0001 PRIVATE "${BOOST_ROOT}/include")
+  endif()
+  target_link_libraries(unit_test_req_0001 PRIVATE adventure_core)
+  add_dependencies(unit_test_req_0001 copy_data)
+  add_test(NAME unit_req_0001 COMMAND unit_test_req_0001)
 endif()
 
