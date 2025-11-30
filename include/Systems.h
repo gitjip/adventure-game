@@ -30,6 +30,7 @@ public:
   SurvivalSystem();
   void tick();
   int health() const;
+  int hunger() const;
   void modifyHealth(int delta);
 private:
   int health_;

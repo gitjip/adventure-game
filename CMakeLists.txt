@@ -162,5 +162,17 @@ if(ENABLE_TESTS)
   target_link_libraries(unit_test_req_0001 PRIVATE adventure_core)
   add_dependencies(unit_test_req_0001 copy_data)
   add_test(NAME unit_req_0001 COMMAND unit_test_req_0001)
+  
+  # Survival system tests (REQ-0002)
+  add_executable(unit_test_survival
+    tests/test_survival.cpp
+  )
+  target_include_directories(unit_test_survival PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  if(DEFINED BOOST_ROOT AND EXISTS "${BOOST_ROOT}/include")
+    target_include_directories(unit_test_survival PRIVATE "${BOOST_ROOT}/include")
+  endif()
+  target_link_libraries(unit_test_survival PRIVATE adventure_core)
+  add_dependencies(unit_test_survival copy_data)
+  add_test(NAME unit_survival COMMAND unit_test_survival)
 endif()
 

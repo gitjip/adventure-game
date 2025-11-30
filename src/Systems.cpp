@@ -15,8 +15,14 @@ void SurvivalSystem::tick() {
   // placeholder: simple hunger increase
   hunger_ += 1;
   if (hunger_ > 100) hunger_ = 100;
+  // If hunger is critical, decrease health as a penalty
+  if (hunger_ >= 100) {
+    health_ -= 10;
+    if (health_ < 0) health_ = 0;
+  }
 }
 int SurvivalSystem::health() const { return health_; }
+int SurvivalSystem::hunger() const { return hunger_; }
 void SurvivalSystem::modifyHealth(int delta) { health_ += delta; }
 
 // CombatSystem
