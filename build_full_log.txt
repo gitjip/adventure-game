@@ -1,0 +1,24 @@
+﻿"D:\Program Files\CMake\bin\cmake.exe" -SD:\Users\damin\Documents\VSCode\projects\adventure-game -BD:\Users\damin\Documents\VSCode\projects\adventure-game\build --check-build-system CMakeFiles\Makefile.cmake 0
+"D:\Program Files\CMake\bin\cmake.exe" -E cmake_progress_start D:\Users\damin\Documents\VSCode\projects\adventure-game\build\CMakeFiles D:\Users\damin\Documents\VSCode\projects\adventure-game\build\\CMakeFiles\progress.marks
+D:/Strawberry/c/bin/mingw32-make.exe  -f CMakeFiles\Makefile2 all
+mingw32-make[1]: Entering directory 'D:/Users/damin/Documents/VSCode/projects/adventure-game/build'
+D:/Strawberry/c/bin/mingw32-make.exe  -f CMakeFiles\adventure_game.dir\build.make CMakeFiles/adventure_game.dir/depend
+mingw32-make[2]: Entering directory 'D:/Users/damin/Documents/VSCode/projects/adventure-game/build'
+"D:\Program Files\CMake\bin\cmake.exe" -E cmake_depends "MinGW Makefiles" D:\Users\damin\Documents\VSCode\projects\adventure-game D:\Users\damin\Documents\VSCode\projects\adventure-game D:\Users\damin\Documents\VSCode\projects\adventure-game\build D:\Users\damin\Documents\VSCode\projects\adventure-game\build D:\Users\damin\Documents\VSCode\projects\adventure-game\build\CMakeFiles\adventure_game.dir\DependInfo.cmake "--color="
+mingw32-make[2]: Leaving directory 'D:/Users/damin/Documents/VSCode/projects/adventure-game/build'
+D:/Strawberry/c/bin/mingw32-make.exe  -f CMakeFiles\adventure_game.dir\build.make CMakeFiles/adventure_game.dir/build
+mingw32-make[2]: Entering directory 'D:/Users/damin/Documents/VSCode/projects/adventure-game/build'
+[ 33%] Building CXX object CMakeFiles/adventure_game.dir/src/main.cpp.obj
+D:\Users\damin\mingw64\bin\g++.exe -DBOOST_ATOMIC_NO_LIB -DBOOST_FILESYSTEM_NO_LIB @CMakeFiles/adventure_game.dir/includes_CXX.rsp -g -std=gnu++17 -MD -MT CMakeFiles/adventure_game.dir/src/main.cpp.obj -MF CMakeFiles\adventure_game.dir\src\main.cpp.obj.d -o CMakeFiles\adventure_game.dir\src\main.cpp.obj -c D:\Users\damin\Documents\VSCode\projects\adventure-game\src\main.cpp
+mingw32-make : mingw32-make[2]: *** [CMakeFiles\adventure_game.dir\build.make:79: CMakeFiles/adventure_game.dir/src/main.cpp
+.obj] Error 1
+所在位置 行:1 字符: 22
++ Push-Location build; mingw32-make VERBOSE=1 2>&1 | Out-File -Encoding ...
++                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (mingw32-make[2]...pp.obj] Error 1:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+mingw32-make[2]: Leaving directory 'D:/Users/damin/Documents/VSCode/projects/adventure-game/build'
+mingw32-make[1]: *** [CMakeFiles\Makefile2:86: CMakeFiles/adventure_game.dir/all] Error 2
+mingw32-make[1]: Leaving directory 'D:/Users/damin/Documents/VSCode/projects/adventure-game/build'
+mingw32-make: *** [makefile:90: all] Error 2

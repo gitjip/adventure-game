@@ -39,3 +39,21 @@
 
 # debug information files
 *.dwo
+
+# Build directory
+build/
+
+# CMake files
+/CMakeFiles/
+CMakeCache.txt
+
+# Save games and runtime files
+/saves/
+
+# Visual Studio / IDE
+.vscode/
+.idea/
+
+# MinGW makefile artifacts
+Makefile
+lib/*.a
