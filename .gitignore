@@ -50,6 +50,15 @@ CMakeCache.txt
 # Save games and runtime files
 /saves/
 
+# Application logs
+logs/
+devlogs/
+
+# Data caches and editor exports
+data/*.cache
+data/*.tmp
+
+
 # Visual Studio / IDE
 .vscode/
 .idea/
