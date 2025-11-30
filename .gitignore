@@ -66,3 +66,6 @@ data/*.tmp
 # MinGW makefile artifacts
 Makefile
 lib/*.a
+
+# Ignore requirements directory (local-only requirement documents)
+requirements/
